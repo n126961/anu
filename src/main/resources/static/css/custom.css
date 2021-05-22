@@ -1,0 +1,31 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); // 0.4 is the opacity;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.dialog {
+    background-color: rgba(1, 1, 1, 0.4); // 0.4 is the opacity;
+}
+
+.leadSpace{margin-left:0.5rem;margin-right:0.5rem;}
+
+.top-bottom-space{margin-top:0.5rem;margin-bottom:0.5rem;}
+.padding-half{padding-top:0.5rem;padding-bottom:0.5rem;}
+.padding-right-1{padding-right:1rem}
+.pointer{cursor:pointer}
+.pink{background-color: #d0e0f5}
+.blue-old{background-color:#c0d6f1}
+.blue{background-color:#d0e0f5}
+
+
+.right-border{border-right: 1px solid #FFFFFF8C;}
+
+.pull-right{float:right}
