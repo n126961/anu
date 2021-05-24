@@ -102,15 +102,8 @@
      <url>https://maven.pkg.github.com/n126961/anu</url>
    </repository>
 </distributionManagement>
-<settings>
-    <servers>
-        <server>
-            <id>github</id>
-            <username>${repo.login}</username>
-            <password>${repo.pwd}</password>
-        </server>
-    </servers>
-</settings> 
+
+
 
 	<build>
 	
