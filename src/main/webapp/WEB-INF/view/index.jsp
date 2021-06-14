@@ -9,15 +9,8 @@
 	var categories;
 	var isPop = false;
 	
-	/* function getCategories() {
-		$.get("http://localhost:8090/data/category.json", function(response,
-				status) {
-			categories = response;
-		});
-	} */
-
 	function fetchNearMeOpenRequests() {
-		$.get("http://localhost:8090/near-me?x=" + localStorage.getItem("lat") + "&y="
+		$.get("/near-me?x=" + localStorage.getItem("lat") + "&y="
 				+ localStorage.getItem("lon") + "&page=" + pageNumber, function(
 				response, status) {
 			$("#myModal").hide();
@@ -30,7 +23,7 @@
 	}
 	
 	function getTimeElapsed(ms, ems){
-		var mins = (ms/1000 - ems)/60;
+		var mins = (ms/1000 - ems)/60; 
 		if(mins <= 1){
 			return "Created Just Now";
 		}else if(mins<60){
@@ -84,7 +77,7 @@
 		$("#myModal").show();
 		isPop = true;
 
-		$.get("http://localhost:8090/req-details?requestId=" + requestId,
+		$.get("/req-details?requestId=" + requestId,
 				function(response, status) {
 
 					if (response != null && response != undefined) {
@@ -102,7 +95,7 @@
 
 	function fetchChats(requestId) {
 
-		$.get("http://localhost:8090/get-responses?requestId=" + requestId,
+		$.get("/get-responses?requestId=" + requestId,
 				function(response, status) {
 					var chats = "";
 					if (response != null && response != undefined) {
@@ -271,9 +264,10 @@
 	}
 	
 	function displayMyRequests(previousData, data) {
-		var display = "";
+		var display = "<div class='row'><div class='col-md-8'><p class='display-6'>My Help Requests</p></div><div class='col-md-4'><button type='button' class='btn btn-warning' style='margin-top: 1rem' onClick='displayCreateCreation()'>Raise a Request</button></div></div>";
 		if (previousData != null && previousData != undefined) {
 			if(previousData.length == 0){
+				
 				$("#myRequests").html("<p class='lead top-bottom-space padding-half'>If you are in problem and need any help then please raise a request so that others can help.</p>");
 				return;
 			}
@@ -302,6 +296,9 @@
 	function showLoginMessage(){
 		if(localStorage.getItem("i") == 0){
 			$("#loginMessage").show();
+			$("#openRequests").hide();
+			$("#myRequests").hide();
+			
 		}else{
 			$("#loginMessage").hide();
 		}
@@ -326,6 +323,26 @@
 		$.post("/send-otp", jsonData).done(function(data) {
 			alert("OTP sent");
 			showLoginWithOTP($("#mobileNumber").val());
+		}).fail(function(res) {
+			alert("Failed " + res)
+		});
+	}
+	
+	function postLoginHandler(email,fName,lName){
+		var reqStr = "{\"e\":"+mobNo+"}";
+		
+		var jsonData = JSON.parse(reqStr);
+		
+		$.post("/manage-user", jsonData).done(function(data) {
+			var resJsonData = JSON.parse(data);
+			if(resJsonData.m == undefined){
+				setUserSession(resJsonData.c, resJsonData.i,resJsonData.o,fName,lName);
+				showLoginMessage();
+				closeDisplayForm();	
+			}else{
+				alert(resJsonData.m);
+			}
+			
 		}).fail(function(res) {
 			alert("Failed " + res)
 		});
@@ -371,16 +388,17 @@
 
 <div id="loginMessage" class="container pink">
 	<p class="fs-6 text-danger text-center fw-bold pointer"
-		onClick="showLoginPopUp()">Your are not logged in, click here to
-		login with facebook.</p>
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+		onClick="checkLoginState()">Your are not logged in, click here to
+		login with facebook. <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button></p>
+
 
 </div>
-
+ 
 <div class="container blue">
 
-	<div class="row"><div class="col-md-8"><p class="display-6">My Help Requests</p></div><div class="col-md-4"><button type='button' class='btn btn-warning' style='margin-top: 1rem' onClick='displayCreateCreation()'>Raise a Request</button></div></div>
+	
 	<div id="myRequests">
+	<div class="row"><div class="col-md-8"><p class="display-6">My Help Requests</p></div><div class="col-md-4"><button type='button' class='btn btn-warning' style='margin-top: 1rem' onClick='displayCreateCreation()'>Raise a Request</button></div></div>
 		<h4 class="padding-half">Currently you don't have any open requests</h4>
 	</div>
 </div>

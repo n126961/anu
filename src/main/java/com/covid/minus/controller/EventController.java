@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.covid.minus.cache.RuntimeCache;
 import com.covid.minus.entity.Event;
 import com.covid.minus.repo.EventRepo;
 import com.covid.minus.util.NumberUtil;
@@ -32,6 +33,8 @@ public class EventController {
 	
 	@Autowired
 	NumberUtil util;
+	@Autowired
+	RuntimeCache cache;
 	
 	@PostMapping("/request-help")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -51,7 +54,7 @@ public class EventController {
 		
 		e.setTimeCreated(Instant.now().getEpochSecond());
 		Event saved =eventsRepo.save(e);
-		
+		cache.removeEventForLocation(bigLat+"-"+bigLon);
 		return saved.getRequestId();
 		
 	}
@@ -91,7 +94,7 @@ public class EventController {
 		return eventsRepo.findAll();
 	}
 	
-	public Geometry createCircle(double x, double y, double radius) {
+	private Geometry createCircle(double x, double y, double radius) {
 	    GeometricShapeFactory shapeFactory = new GeometricShapeFactory();
 	    shapeFactory.setNumPoints(32);
 	    shapeFactory.setCentre(new Coordinate(x, y));
@@ -107,10 +110,20 @@ public class EventController {
 		BigDecimal xMax = x.add(new BigDecimal(0.02));
 		BigDecimal yMin = x.subtract(new BigDecimal(0.02));
 		BigDecimal yMax = x.add(new BigDecimal(0.02));
+		if(page == 1) {
+			List<Event> cacheEvents = cache.getEventsForLocation(x+"-"+y);
+			if(cacheEvents != null && cacheEvents.size() > 0) {
+				return cacheEvents;
+			}
+		}
 		// 4 is good for 5 km
 		//Geometry g =createCircle(x, y, 10);
 		Pageable pageable = PageRequest.of((page - 1), 3);
-		return eventsRepo.findByRadius(xMin, xMax,yMin,yMax,pageable);
+		List<Event> events = eventsRepo.findByRadius(xMin, xMax,yMin,yMax,pageable);
+		if(page ==1) {
+			cache.addEventForLocation(x+"-"+y, events);
+		}
+		return events;
 	}
 	
 	@GetMapping("/req-details")

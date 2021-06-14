@@ -1,15 +1,13 @@
 package com.covid.minus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.covid.minus.cache.RuntimeCache;
-import com.covid.minus.entity.OTP;
 import com.covid.minus.entity.Session;
+import com.covid.minus.entity.UserInfo;
 import com.covid.minus.util.NumberUtil;
 
 @RestController
@@ -59,6 +57,16 @@ public class UserController {
 		}else{
 			return "{\"m\":\"Invalid user/credentials, please login again with your mobile number.\"}";
 		}
+	}
+	
+	
+	@PostMapping("/manage-user")
+	public String manage(UserInfo info) {
+		int otp = util.generateOTP();
+		int emailHash = info.getE().hashCode();
+		//Long id = 5003084889L + emailHash;
+		return util.encryptUserInfo(emailHash, otp);
+		//cache.addOTP(id, otp);
 	}
 	
 	@PostMapping("/logout")

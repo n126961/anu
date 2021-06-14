@@ -29,3 +29,10 @@
 .right-border{border-right: 1px solid #FFFFFF8C;}
 
 .pull-right{float:right}
+.navbar-brand span {
+	font-size:0.9rem;
+	font-weight: 100;
+	display:inline-block;
+	vertical-align:middle;
+	text-align:center;
+}

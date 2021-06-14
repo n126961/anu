@@ -50,7 +50,8 @@ public class RuntimeCache {
 	}
 
 	public void clearOtp(Long mobile) {
-		otpCache.remove(mobile);
+		if(otpCache.containsKey(mobile))
+			otpCache.remove(mobile);
 	}
 
 	public List<Event> getEventsForLocation(String location){
@@ -65,6 +66,11 @@ public class RuntimeCache {
 			initCache();
 		}
 		eventsCache.set(location, events);
+	}
+	
+	public void removeEventForLocation(String location) {
+		if(eventsCache.containsKey(location))
+			eventsCache.remove(location);
 	}
 
 }

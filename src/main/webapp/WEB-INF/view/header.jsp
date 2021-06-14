@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Insert title here</title>
+<title>Anurodh - A request towards better tomorrow</title>
 
 <script src="css/jquery.min.js"></script>
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -32,11 +32,6 @@
 	  }
  
  function checkLoginState() {               // Called when a person is finished with the Login Button.
-	    FB.getLoginStatus(function(response) {   // See the onlogin handler
-	      checkFacebookLoginStatusCallback(response);
-	    });
-	  }
-
 	    FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
 	      checkFacebookLoginStatusCallback(response);        // Returns the login status.
 	    });
@@ -45,10 +40,12 @@
 	    console.log('Welcome!  Fetching your profile information.... ');
 	    FB.api('/me', function(response) {
 	      console.log('Successful login for: ' + response.name);
+	      postLoginHandler(response.email, response.firsy_name, response.last_name);
 	      document.getElementById('status').innerHTML =
 	        'Thanks for logging in, ' + response.name + '!';
 	    });
 	  }
+ }
  
  var lat;
  var lon;
@@ -60,7 +57,7 @@
 	 i = localStorage.getItem('i');
 	 if(i == undefined || i == null ||i == "undefined" || i =="0" || i==0){
 		 //User is not valid show a message of login on page and set default values
-		 setUserSession(0,0,0);
+		 setUserSession(0,0,0,"NA","NA");
 		 $("#logoutId").hide();
 		 $("#loginId").show();
 	 }else{
@@ -71,10 +68,12 @@
 	 
  }
  
- function setUserSession(passC,passI,passO){
+ function setUserSession(passC,passI,passO,passF,passL){
 	 localStorage.setItem('c', passC);
 	 localStorage.setItem('i', passI);
 	 localStorage.setItem('o', passO);
+	 localStorage.setItem('f', passF);
+	 localStorage.setItem('l', passL);
 	 
  }
  
@@ -96,7 +95,7 @@
 	 localStorage.setItem('lat',lat);
 	 localStorage.setItem('lon',lon);
 	 $("#data").html("");
-	 
+	 //alert(localStorage.getItem("lat")+"-"+localStorage.getItem("lon"));
 	 fetchOpenRequests(0);
 	 
  }
@@ -127,7 +126,7 @@
 </head>
 <body onload="generateInitialPageView()">
 <script>
-	 windows.fbAsyncInit = function(){
+	 window.fbAsyncInit = function(){
 		 FB.init({
 			 appId:'159649879369291',cookie:true,xfbml:true,version:'v10.0'
 		 });
@@ -144,7 +143,10 @@
 </script>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-gradient">
 		<div class="container-fluid">
-			<a class="navbar-brand right-border padding-right-1" href="/">MINUS</a>
+			<a class="navbar-brand right-border padding-right-1 col-2" href="/">
+			<div class="row"><img src="Anurodh.png" class ="img-fluid" ></div>
+			<div class="row"><span>A request towards better tomorrow</span></div>
+			</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav"
 				aria-controls="navbarNav" aria-expanded="false"
@@ -171,7 +173,7 @@
 						aria-disabled="true" onClick="logout()">Logout</a></li>
 					<li id="loginId" class="nav-item "><a
 						class="nav-link navbar-right" href="#" tabindex="-1"
-						aria-disabled="true" onClick="showLoginPopUp()">Login</a></li>
+						aria-disabled="true" onClick="checkLoginState()">Login</a></li>
 				</ul>
 			</div>
 		</div>
